@@ -1,0 +1,25 @@
+{
+    "name": "azonmedia/routes-map",
+    "type": "library",
+    "description": "Class:method to route mapping generated from PHP to JS",
+    "keywords": ["routes map","php to js"],
+    "homepage": "https://github.com/AzonMedia/routes-map",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vesko Kenashkov",
+            "email": "kenashkov@azonmedia.com",
+            "homepage": "http://azonmedia.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "azonmedia/components": "dev-master",
+    },
+    "autoload": {
+        "psr-4": {
+            "Azonmedia\\RoutesMap\\": "src/"
+        }
+    }
+}
