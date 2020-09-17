@@ -69,9 +69,9 @@ class RoutesMap
      */
     public function dump_routes_map(): void
     {
-        $this->set_routes_map_dumped(true);
         $routes_map_str = $this->as_string();
         file_put_contents($this->get_routes_map_file(), $routes_map_str);//replace the old file
+        $this->set_routes_map_dumped(true);
     }
 
     /**
