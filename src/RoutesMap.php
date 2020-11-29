@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Azonmedia\RoutesMap;
 
 use Azonmedia\Exceptions\InvalidArgumentException;
+use Azonmedia\Reflection\ReflectionClass;
 use Azonmedia\Routing\Interfaces\RouterInterface;
 use Azonmedia\Utilities\AlphaNumUtil;
 use Azonmedia\Utilities\FilesUtil;
@@ -40,12 +41,18 @@ class RoutesMap
     protected bool $routes_map_dumped_flag = false;
 
     /**
+     * If there is a base class at which it should stop producing records (@see self::generate_routes_map())
+     * @var string
+     */
+    protected ?string $base_class = null;
+
+    /**
      * RoutesMap constructor.
      * @param RouterInterface $Router
      * @param string $routes_map_file Where the javascript routes map should be dumped.
      * @throws InvalidArgumentException
      */
-    public function __construct(RouterInterface $Router, string $routes_map_file)
+    public function __construct(RouterInterface $Router, string $routes_map_file, ?string $base_class = null)
     {
         $routes_map_dir = dirname($routes_map_file);
         $file_error = FilesUtil::file_error($routes_map_dir, $is_writable = true, $is_dir = true, $arg_name = t::_('routes map directory') );
@@ -54,6 +61,7 @@ class RoutesMap
         }
         $this->Router = $Router;
         $this->routes_map_file = $routes_map_file;
+        $this->base_class = $base_class;
     }
 
     /**
@@ -129,9 +137,18 @@ class RoutesMap
                     //the meta takes precedence as there may be multiple routes matching the same class
                     $class = $meta[$route][$methods]['class'];
                 }
-                //if there duplicate routes it is nota problem - the last one overrides the previous
+
+                //if there duplicate routes it is not a problem - the last one overrides the previous
                 //$ret .= AlphaNumUtil::indent(sprintf('"%s:%s" : "%s",', $controller[0], $controller[1], $route) ).PHP_EOL;
                 $ret .= AlphaNumUtil::indent(sprintf('"%s:%s" : "%s",', addslashes($class), $class_method, $route) ).PHP_EOL;
+
+                //we also need to dump the same routes for parent classes
+                //a model in the application may extend a parent model
+                //so both (in fact there could be multiple extending classes - all the chain) should dump the assiciation until reaching the base model class
+                $RClass = new ReflectionClass($class);
+                foreach ($RClass->getParentClasses($this->base_class) as $parent_class) {
+                    $ret .= AlphaNumUtil::indent(sprintf('"%s:%s" : "%s",', addslashes($parent_class), $class_method, $route) ).PHP_EOL;
+                }
             }
         }
         $ret .= '}'.PHP_EOL;

@@ -19,7 +19,8 @@
         "azonmedia/utilities": "dev-master",
         "azonmedia/exceptions": "dev-master",
         "azonmedia/translator": "dev-master",
-        "azonmedia/routing": "dev-master"
+        "azonmedia/routing": "dev-master",
+        "azonmedia/reflection": "dev-master"
     },
     "autoload": {
         "psr-4": {
